@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # ==========================================
-# ตำแหน่งโมเดล
+# โหลดโมเดล
 # ==========================================
 
 MODEL_PATH = os.path.join(
@@ -15,11 +15,8 @@ MODEL_PATH = os.path.join(
     "alzheimer_model.pkl"
 )
 
-# ==========================================
-# โหลดโมเดล
-# ==========================================
-
 try:
+
     model = joblib.load(MODEL_PATH)
 
     weights = model["weights"]
@@ -27,9 +24,11 @@ try:
     std = model["std"]
 
 except Exception as e:
+
     weights = None
     mean = None
     std = None
+
     print("ไม่สามารถโหลดโมเดลได้:", e)
 
 
@@ -37,15 +36,33 @@ except Exception as e:
 # ฟังก์ชัน AI
 # ==========================================
 
-def predict_risk(age, gender, memory, confusion):
+def predict_risk(
+    age,
+    gender,
+    memory,
+    confusion,
+    family_history,
+    disorientation,
+    difficulty_tasks
+):
 
     features = np.array(
-        [[age, gender, memory, confusion]],
+        [[
+            age,
+            gender,
+            memory,
+            confusion,
+            family_history,
+            disorientation,
+            difficulty_tasks
+        ]],
         dtype=float
     )
 
     # Standardization
-    features = (features - mean) / std
+    features = (
+        features - mean
+    ) / std
 
     # เพิ่ม Bias
     features = np.c_[
@@ -56,12 +73,22 @@ def predict_risk(age, gender, memory, confusion):
     # Logistic Regression
     z = features @ weights
 
-    # ป้องกัน overflow
-    z = np.clip(z, -500, 500)
+    z = np.clip(
+        z,
+        -500,
+        500
+    )
 
-    probability = 1 / (1 + np.exp(-z))
+    probability = (
+        1 /
+        (
+            1 + np.exp(-z)
+        )
+    )
 
-    return float(probability[0])
+    return float(
+        probability[0]
+    )
 
 
 # ==========================================
@@ -71,21 +98,32 @@ def predict_risk(age, gender, memory, confusion):
 @app.route("/")
 def home():
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
 
 # ==========================================
 # ประเมินความเสี่ยง
 # ==========================================
 
-@app.route("/predict", methods=["POST"])
+@app.route(
+    "/predict",
+    methods=["POST"]
+)
 def predict():
 
     try:
 
+        # -----------------------------
         # รับข้อมูล
+        # -----------------------------
+
         age = float(
-            request.form.get("age", 0)
+            request.form.get(
+                "age",
+                0
+            )
         )
 
         gender_text = request.form.get(
@@ -94,16 +132,43 @@ def predict():
         )
 
         memory = int(
-            request.form.get("memory", 0)
+            request.form.get(
+                "memory",
+                0
+            )
         )
 
         confusion = int(
-            request.form.get("confusion", 0)
+            request.form.get(
+                "confusion",
+                0
+            )
         )
 
-        # ==================================
-        # ตรวจสอบข้อมูล
-        # ==================================
+        family_history = int(
+            request.form.get(
+                "family_history",
+                0
+            )
+        )
+
+        disorientation = int(
+            request.form.get(
+                "disorientation",
+                0
+            )
+        )
+
+        difficulty_tasks = int(
+            request.form.get(
+                "difficulty_tasks",
+                0
+            )
+        )
+
+        # -----------------------------
+        # ตรวจสอบอายุ
+        # -----------------------------
 
         if age < 1 or age > 120:
 
@@ -111,6 +176,10 @@ def predict():
                 "index.html",
                 error="กรุณากรอกอายุระหว่าง 1-120 ปี"
             )
+
+        # -----------------------------
+        # ตรวจสอบเพศ
+        # -----------------------------
 
         if gender_text not in [
             "male",
@@ -122,32 +191,43 @@ def predict():
                 error="กรุณาเลือกเพศ"
             )
 
-        if memory not in [0, 1]:
+        # -----------------------------
+        # ตรวจสอบคำตอบ
+        # -----------------------------
+
+        answers = [
+            memory,
+            confusion,
+            family_history,
+            disorientation,
+            difficulty_tasks
+        ]
+
+        if any(
+            answer not in [0, 1]
+            for answer in answers
+        ):
 
             return render_template(
                 "index.html",
-                error="ข้อมูลปัญหาความจำไม่ถูกต้อง"
+                error="ข้อมูลแบบประเมินไม่ถูกต้อง"
             )
 
-        if confusion not in [0, 1]:
-
-            return render_template(
-                "index.html",
-                error="ข้อมูลอาการสับสนไม่ถูกต้อง"
-            )
-
-        # ==================================
+        # -----------------------------
         # แปลงเพศ
-        # ==================================
+        # -----------------------------
 
         if gender_text == "male":
+
             gender = 0
+
         else:
+
             gender = 1
 
-        # ==================================
+        # -----------------------------
         # ตรวจสอบโมเดล
-        # ==================================
+        # -----------------------------
 
         if weights is None:
 
@@ -156,29 +236,32 @@ def predict():
                 error="ไม่พบโมเดล AI กรุณาตรวจสอบไฟล์ model/alzheimer_model.pkl"
             )
 
-        # ==================================
+        # -----------------------------
         # เรียก AI
-        # ==================================
+        # -----------------------------
 
         probability = predict_risk(
             age,
             gender,
             memory,
-            confusion
+            confusion,
+            family_history,
+            disorientation,
+            difficulty_tasks
         )
 
-        # ==================================
+        # -----------------------------
         # เปอร์เซ็นต์
-        # ==================================
+        # -----------------------------
 
         risk_percent = round(
             probability * 100,
             2
         )
 
-        # ==================================
+        # -----------------------------
         # ระดับความเสี่ยง
-        # ==================================
+        # -----------------------------
 
         if probability < 0.30:
 
@@ -192,9 +275,9 @@ def predict():
 
             risk_level = "ความเสี่ยงสูง"
 
-        # ==================================
+        # -----------------------------
         # คำแนะนำ
-        # ==================================
+        # -----------------------------
 
         if probability < 0.30:
 
@@ -220,11 +303,12 @@ def predict():
                 "เพื่อประเมินเพิ่มเติม"
             )
 
-        # ==================================
+        # -----------------------------
         # ส่งผลลัพธ์
-        # ==================================
+        # -----------------------------
 
         return render_template(
+
             "result.html",
 
             result=risk_level,
@@ -239,7 +323,13 @@ def predict():
 
             memory=memory,
 
-            confusion=confusion
+            confusion=confusion,
+
+            family_history=family_history,
+
+            disorientation=disorientation,
+
+            difficulty_tasks=difficulty_tasks
         )
 
     except Exception as e:
@@ -251,7 +341,7 @@ def predict():
 
 
 # ==========================================
-# Run
+# เริ่มระบบ
 # ==========================================
 
 if __name__ == "__main__":

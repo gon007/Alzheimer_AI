@@ -36,7 +36,7 @@
         }
 
         .container {
-            max-width: 700px;
+            max-width: 750px;
             margin: 35px auto;
             padding: 0 20px;
         }
@@ -61,6 +61,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
+            font-size: 17px;
         }
 
         input,
@@ -70,6 +71,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 10px;
             font-size: 16px;
+            background: white;
         }
 
         input:focus,
@@ -121,6 +123,14 @@
             font-weight: bold;
         }
 
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #2563eb;
+        }
+
         .footer {
             text-align: center;
             margin: 25px 0;
@@ -160,6 +170,13 @@
 
             <form action="/predict"
                   method="POST">
+
+
+                <!-- ข้อมูลพื้นฐาน -->
+
+                <div class="section-title">
+                    <strong>👤 ข้อมูลพื้นฐาน</strong>
+                </div>
 
 
                 <div class="form-group">
@@ -203,6 +220,13 @@
 
                     </select>
 
+                </div>
+
+
+                <!-- อาการที่เกี่ยวข้อง -->
+
+                <div class="section-title">
+                    <strong>🧠 อาการและปัจจัยที่เกี่ยวข้อง</strong>
                 </div>
 
 
@@ -258,6 +282,84 @@
                 </div>
 
 
+                <div class="form-group">
+
+                    <label>
+                        มีประวัติคนในครอบครัวเคยเป็นอัลไซเมอร์หรือไม่?
+                    </label>
+
+                    <select name="family_history"
+                            required>
+
+                        <option value="">
+                            -- เลือกคำตอบ --
+                        </option>
+
+                        <option value="0">
+                            ไม่มี
+                        </option>
+
+                        <option value="1">
+                            มี
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        มีอาการหลงทาง สับสนสถานที่ หรือจำวันที่ไม่ได้หรือไม่?
+                    </label>
+
+                    <select name="disorientation"
+                            required>
+
+                        <option value="">
+                            -- เลือกคำตอบ --
+                        </option>
+
+                        <option value="0">
+                            ไม่มี
+                        </option>
+
+                        <option value="1">
+                            มี
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        มีปัญหาในการทำกิจวัตรหรือทำงานที่เคยทำได้เป็นประจำหรือไม่?
+                    </label>
+
+                    <select name="difficulty_tasks"
+                            required>
+
+                        <option value="">
+                            -- เลือกคำตอบ --
+                        </option>
+
+                        <option value="0">
+                            ไม่มี
+                        </option>
+
+                        <option value="1">
+                            มี
+                        </option>
+
+                    </select>
+
+                </div>
+
+
                 <button type="submit">
                     🧠 ประเมินความเสี่ยง
                 </button>
@@ -271,7 +373,7 @@
 
                 <br>
 
-                กรอกข้อมูลให้ครบถ้วน
+                กรอกข้อมูลให้ครบทุกข้อ
                 จากนั้นกดปุ่ม
                 "ประเมินความเสี่ยง"
                 เพื่อให้ระบบ AI วิเคราะห์ข้อมูล
@@ -293,6 +395,7 @@
             </div>
 
         </div>
+
 
         <div class="footer">
 
