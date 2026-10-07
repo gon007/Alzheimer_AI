@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Alzheimer Risk Assessment AI</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #243b53;
+        }
+
+        .header {
+            background: #2563eb;
+            color: white;
+            text-align: center;
+            padding: 35px 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .info {
+            margin-top: 25px;
+            padding: 18px;
+            background: #eff6ff;
+            border-radius: 12px;
+            line-height: 1.7;
+        }
+
+        .warning {
+            margin-top: 20px;
+            padding: 18px;
+            background: #fff7ed;
+            color: #9a3412;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .error {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin: 25px 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>🧠 Alzheimer Risk Assessment AI</h1>
+
+        <p>ระบบ AI สำหรับประเมินความเสี่ยงเบื้องต้น</p>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="card">
+
+            <h2>📋 แบบประเมิน</h2>
+
+            {% if error %}
+
+            <div class="error">
+                ⚠️ {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <form action="/predict"
+                  method="POST">
+
+
+                <div class="form-group">
+
+                    <label>
+                        อายุ
+                    </label>
+
+                    <input
+                        type="number"
+                        name="age"
+                        min="1"
+                        max="120"
+                        placeholder="เช่น 65"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        เพศ
+                    </label>
+
+                    <select name="gender"
+                            required>
+
+                        <option value="">
+                            -- เลือกเพศ --
+                        </option>
+
+                        <option value="male">
+                            ชาย
+                        </option>
+
+                        <option value="female">
+                            หญิง
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        มีปัญหาด้านความจำหรือไม่?
+                    </label>
+
+                    <select name="memory"
+                            required>
+
+                        <option value="">
+                            -- เลือกคำตอบ --
+                        </option>
+
+                        <option value="0">
+                            ไม่มี
+                        </option>
+
+                        <option value="1">
+                            มี
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        มีอาการสับสนหรือไม่?
+                    </label>
+
+                    <select name="confusion"
+                            required>
+
+                        <option value="">
+                            -- เลือกคำตอบ --
+                        </option>
+
+                        <option value="0">
+                            ไม่มี
+                        </option>
+
+                        <option value="1">
+                            มี
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit">
+                    🧠 ประเมินความเสี่ยง
+                </button>
+
+            </form>
+
+
+            <div class="info">
+
+                <strong>ℹ️ วิธีใช้งาน</strong>
+
+                <br>
+
+                กรอกข้อมูลให้ครบถ้วน
+                จากนั้นกดปุ่ม
+                "ประเมินความเสี่ยง"
+                เพื่อให้ระบบ AI วิเคราะห์ข้อมูล
+
+            </div>
+
+
+            <div class="warning">
+
+                ⚠️ <strong>คำเตือน</strong>
+
+                <br><br>
+
+                ระบบนี้จัดทำขึ้นเพื่อการศึกษา
+                ผลลัพธ์เป็นเพียงการประเมินเบื้องต้น
+                ไม่ใช่การวินิจฉัยโรค
+                และไม่สามารถใช้แทนคำแนะนำจากแพทย์ได้
+
+            </div>
+
+        </div>
+
+        <div class="footer">
+
+            AI Project for Education
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
