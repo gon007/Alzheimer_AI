@@ -131,6 +131,13 @@
             color: #2563eb;
         }
 
+        .hint {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
         .footer {
             text-align: center;
             margin: 25px 0;
@@ -168,8 +175,7 @@
             {% endif %}
 
 
-            <form action="/predict"
-                  method="POST">
+            <form action="/predict" method="POST">
 
 
                 <!-- ข้อมูลพื้นฐาน -->
@@ -178,6 +184,8 @@
                     <strong>👤 ข้อมูลพื้นฐาน</strong>
                 </div>
 
+
+                <!-- อายุ -->
 
                 <div class="form-group">
 
@@ -190,6 +198,7 @@
                         name="age"
                         min="1"
                         max="120"
+                        step="1"
                         placeholder="เช่น 65"
                         required
                     >
@@ -197,14 +206,15 @@
                 </div>
 
 
+                <!-- เพศ -->
+
                 <div class="form-group">
 
                     <label>
                         เพศ
                     </label>
 
-                    <select name="gender"
-                            required>
+                    <select name="gender" required>
 
                         <option value="">
                             -- เลือกเพศ --
@@ -223,21 +233,68 @@
                 </div>
 
 
-                <!-- อาการที่เกี่ยวข้อง -->
+                <!-- ระดับการศึกษา -->
+
+                <div class="form-group">
+
+                    <label>
+                        ระดับการศึกษา
+                    </label>
+
+                    <input
+                        type="number"
+                        name="education_level"
+                        min="0"
+                        max="3"
+                        step="1"
+                        placeholder="กรอกค่า 0 - 3"
+                        required
+                    >
+
+                    <span class="hint">
+                        ใช้ค่าตามรูปแบบข้อมูลของ Dataset
+                    </span>
+
+                </div>
+
+
+                <!-- BMI -->
+
+                <div class="form-group">
+
+                    <label>
+                        BMI (ดัชนีมวลกาย)
+                    </label>
+
+                    <input
+                        type="number"
+                        name="bmi"
+                        min="10"
+                        max="60"
+                        step="0.1"
+                        placeholder="เช่น 23.5"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ปัจจัยด้านสุขภาพ -->
 
                 <div class="section-title">
-                    <strong>🧠 อาการและปัจจัยที่เกี่ยวข้อง</strong>
+                    <strong>🩺 ปัจจัยด้านสุขภาพ</strong>
                 </div>
 
+
+                <!-- Diabetes -->
 
                 <div class="form-group">
 
                     <label>
-                        มีปัญหาด้านความจำหรือไม่?
+                        มีโรคเบาหวานหรือไม่?
                     </label>
 
-                    <select name="memory"
-                            required>
+                    <select name="diabetes" required>
 
                         <option value="">
                             -- เลือกคำตอบ --
@@ -256,14 +313,15 @@
                 </div>
 
 
+                <!-- Hypertension -->
+
                 <div class="form-group">
 
                     <label>
-                        มีอาการสับสนหรือไม่?
+                        มีภาวะความดันโลหิตสูงหรือไม่?
                     </label>
 
-                    <select name="confusion"
-                            required>
+                    <select name="hypertension" required>
 
                         <option value="">
                             -- เลือกคำตอบ --
@@ -281,6 +339,8 @@
 
                 </div>
 
+
+                <!-- Family History -->
 
                 <div class="form-group">
 
@@ -288,8 +348,7 @@
                         มีประวัติคนในครอบครัวเคยเป็นอัลไซเมอร์หรือไม่?
                     </label>
 
-                    <select name="family_history"
-                            required>
+                    <select name="family_history" required>
 
                         <option value="">
                             -- เลือกคำตอบ --
@@ -305,60 +364,40 @@
 
                     </select>
 
+                </div>
+
+
+                <!-- Cognitive Score -->
+
+                <div class="section-title">
+                    <strong>🧠 ด้านการรู้คิด</strong>
                 </div>
 
 
                 <div class="form-group">
 
                     <label>
-                        มีอาการหลงทาง สับสนสถานที่ หรือจำวันที่ไม่ได้หรือไม่?
+                        คะแนนการทดสอบด้านการรู้คิด
                     </label>
 
-                    <select name="disorientation"
-                            required>
+                    <input
+                        type="number"
+                        name="cognitive_score"
+                        min="0"
+                        max="100"
+                        step="1"
+                        placeholder="เช่น 70"
+                        required
+                    >
 
-                        <option value="">
-                            -- เลือกคำตอบ --
-                        </option>
-
-                        <option value="0">
-                            ไม่มี
-                        </option>
-
-                        <option value="1">
-                            มี
-                        </option>
-
-                    </select>
+                    <span class="hint">
+                        Cognitive Test Score
+                    </span>
 
                 </div>
 
 
-                <div class="form-group">
-
-                    <label>
-                        มีปัญหาในการทำกิจวัตรหรือทำงานที่เคยทำได้เป็นประจำหรือไม่?
-                    </label>
-
-                    <select name="difficulty_tasks"
-                            required>
-
-                        <option value="">
-                            -- เลือกคำตอบ --
-                        </option>
-
-                        <option value="0">
-                            ไม่มี
-                        </option>
-
-                        <option value="1">
-                            มี
-                        </option>
-
-                    </select>
-
-                </div>
-
+                <!-- ปุ่ม -->
 
                 <button type="submit">
                     🧠 ประเมินความเสี่ยง

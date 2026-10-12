@@ -156,7 +156,7 @@
             </div>
 
             <p>
-                ค่าความเสี่ยงที่ประเมินโดยโมเดล AI
+                ค่าคะแนนความเสี่ยงที่ประเมินโดยโมเดล AI
             </p>
 
 
@@ -167,83 +167,102 @@
             </div>
 
 
+            <!-- ข้อมูลที่ใช้ประเมิน -->
+
             <div class="info">
 
                 <h3>📋 ข้อมูลที่ใช้ประเมิน</h3>
+
 
                 <p>
                     👤 อายุ:
                     <strong>{{ age }} ปี</strong>
                 </p>
 
+
                 <p>
                     ⚥ เพศ:
                     <strong>
+
                         {% if gender == "male" %}
                             ชาย
                         {% else %}
                             หญิง
                         {% endif %}
+
                     </strong>
                 </p>
 
+
                 <p>
-                    🧠 ปัญหาความจำ:
+                    🎓 ระดับการศึกษา:
                     <strong>
-                        {% if memory == 1 %}
+                        {{ education_level }}
+                    </strong>
+                </p>
+
+
+                <p>
+                    ⚖️ BMI:
+                    <strong>
+                        {{ bmi }}
+                    </strong>
+                </p>
+
+
+                <p>
+                    🩺 โรคเบาหวาน:
+                    <strong>
+
+                        {% if diabetes == 1 %}
                             มี
                         {% else %}
                             ไม่มี
                         {% endif %}
+
                     </strong>
                 </p>
 
+
                 <p>
-                    ❓ อาการสับสน:
+                    ❤️ ความดันโลหิตสูง:
                     <strong>
-                        {% if confusion == 1 %}
+
+                        {% if hypertension == 1 %}
                             มี
                         {% else %}
                             ไม่มี
                         {% endif %}
+
                     </strong>
                 </p>
+
 
                 <p>
                     👨‍👩‍👧 ประวัติครอบครัวเป็นอัลไซเมอร์:
                     <strong>
+
                         {% if family_history == 1 %}
                             มี
                         {% else %}
                             ไม่มี
                         {% endif %}
+
                     </strong>
                 </p>
 
-                <p>
-                    🧭 หลงทางหรือสับสนสถานที่:
-                    <strong>
-                        {% if disorientation == 1 %}
-                            มี
-                        {% else %}
-                            ไม่มี
-                        {% endif %}
-                    </strong>
-                </p>
 
                 <p>
-                    🛠️ มีปัญหาในการทำกิจวัตรหรือทำงาน:
+                    🧠 คะแนนการทดสอบด้านการรู้คิด:
                     <strong>
-                        {% if difficulty_tasks == 1 %}
-                            มี
-                        {% else %}
-                            ไม่มี
-                        {% endif %}
+                        {{ cognitive_score }}
                     </strong>
                 </p>
 
             </div>
 
+
+            <!-- คำแนะนำ -->
 
             <div class="recommendation">
 
@@ -255,6 +274,8 @@
 
             </div>
 
+
+            <!-- คำเตือน -->
 
             <div class="warning">
 

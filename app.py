@@ -16,7 +16,6 @@ MODEL_PATH = os.path.join(
 )
 
 try:
-
     model = joblib.load(MODEL_PATH)
 
     weights = model["weights"]
@@ -24,7 +23,6 @@ try:
     std = model["std"]
 
 except Exception as e:
-
     weights = None
     mean = None
     std = None
@@ -39,22 +37,24 @@ except Exception as e:
 def predict_risk(
     age,
     gender,
-    memory,
-    confusion,
+    education_level,
+    bmi,
+    diabetes,
+    hypertension,
     family_history,
-    disorientation,
-    difficulty_tasks
+    cognitive_score
 ):
 
     features = np.array(
         [[
             age,
             gender,
-            memory,
-            confusion,
+            education_level,
+            bmi,
+            diabetes,
+            hypertension,
             family_history,
-            disorientation,
-            difficulty_tasks
+            cognitive_score
         ]],
         dtype=float
     )
@@ -131,16 +131,30 @@ def predict():
             ""
         )
 
-        memory = int(
+        education_level = float(
             request.form.get(
-                "memory",
+                "education_level",
                 0
             )
         )
 
-        confusion = int(
+        bmi = float(
             request.form.get(
-                "confusion",
+                "bmi",
+                0
+            )
+        )
+
+        diabetes = int(
+            request.form.get(
+                "diabetes",
+                0
+            )
+        )
+
+        hypertension = int(
+            request.form.get(
+                "hypertension",
                 0
             )
         )
@@ -152,19 +166,13 @@ def predict():
             )
         )
 
-        disorientation = int(
+        cognitive_score = float(
             request.form.get(
-                "disorientation",
+                "cognitive_score",
                 0
             )
         )
 
-        difficulty_tasks = int(
-            request.form.get(
-                "difficulty_tasks",
-                0
-            )
-        )
 
         # -----------------------------
         # ตรวจสอบอายุ
@@ -176,6 +184,7 @@ def predict():
                 "index.html",
                 error="กรุณากรอกอายุระหว่าง 1-120 ปี"
             )
+
 
         # -----------------------------
         # ตรวจสอบเพศ
@@ -191,27 +200,6 @@ def predict():
                 error="กรุณาเลือกเพศ"
             )
 
-        # -----------------------------
-        # ตรวจสอบคำตอบ
-        # -----------------------------
-
-        answers = [
-            memory,
-            confusion,
-            family_history,
-            disorientation,
-            difficulty_tasks
-        ]
-
-        if any(
-            answer not in [0, 1]
-            for answer in answers
-        ):
-
-            return render_template(
-                "index.html",
-                error="ข้อมูลแบบประเมินไม่ถูกต้อง"
-            )
 
         # -----------------------------
         # แปลงเพศ
@@ -225,6 +213,64 @@ def predict():
 
             gender = 1
 
+
+        # -----------------------------
+        # ตรวจสอบระดับการศึกษา
+        # -----------------------------
+
+        if education_level < 0 or education_level > 3:
+
+            return render_template(
+                "index.html",
+                error="ระดับการศึกษาต้องอยู่ระหว่าง 0-3"
+            )
+
+
+        # -----------------------------
+        # ตรวจสอบ BMI
+        # -----------------------------
+
+        if bmi < 10 or bmi > 60:
+
+            return render_template(
+                "index.html",
+                error="กรุณากรอกค่า BMI ระหว่าง 10-60"
+            )
+
+
+        # -----------------------------
+        # ตรวจสอบข้อมูล Yes / No
+        # -----------------------------
+
+        answers = [
+            diabetes,
+            hypertension,
+            family_history
+        ]
+
+        if any(
+            answer not in [0, 1]
+            for answer in answers
+        ):
+
+            return render_template(
+                "index.html",
+                error="ข้อมูลแบบประเมินไม่ถูกต้อง"
+            )
+
+
+        # -----------------------------
+        # ตรวจสอบ Cognitive Score
+        # -----------------------------
+
+        if cognitive_score < 0 or cognitive_score > 100:
+
+            return render_template(
+                "index.html",
+                error="คะแนน Cognitive Test ต้องอยู่ระหว่าง 0-100"
+            )
+
+
         # -----------------------------
         # ตรวจสอบโมเดล
         # -----------------------------
@@ -236,6 +282,7 @@ def predict():
                 error="ไม่พบโมเดล AI กรุณาตรวจสอบไฟล์ model/alzheimer_model.pkl"
             )
 
+
         # -----------------------------
         # เรียก AI
         # -----------------------------
@@ -243,12 +290,14 @@ def predict():
         probability = predict_risk(
             age,
             gender,
-            memory,
-            confusion,
+            education_level,
+            bmi,
+            diabetes,
+            hypertension,
             family_history,
-            disorientation,
-            difficulty_tasks
+            cognitive_score
         )
+
 
         # -----------------------------
         # เปอร์เซ็นต์
@@ -258,6 +307,7 @@ def predict():
             probability * 100,
             2
         )
+
 
         # -----------------------------
         # ระดับความเสี่ยง
@@ -275,6 +325,7 @@ def predict():
 
             risk_level = "ความเสี่ยงสูง"
 
+
         # -----------------------------
         # คำแนะนำ
         # -----------------------------
@@ -291,8 +342,8 @@ def predict():
 
             recommendation = (
                 "ผลการประเมินอยู่ในระดับความเสี่ยงปานกลาง "
-                "ควรติดตามการเปลี่ยนแปลงของความจำ "
-                "และปรึกษาผู้เชี่ยวชาญหากมีอาการต่อเนื่อง"
+                "ควรติดตามสุขภาพและการเปลี่ยนแปลงด้านการรู้คิด "
+                "และปรึกษาผู้เชี่ยวชาญหากมีความกังวล"
             )
 
         else:
@@ -302,6 +353,7 @@ def predict():
                 "ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์ "
                 "เพื่อประเมินเพิ่มเติม"
             )
+
 
         # -----------------------------
         # ส่งผลลัพธ์
@@ -321,16 +373,19 @@ def predict():
 
             gender=gender_text,
 
-            memory=memory,
+            education_level=int(education_level),
 
-            confusion=confusion,
+            bmi=bmi,
+
+            diabetes=diabetes,
+
+            hypertension=hypertension,
 
             family_history=family_history,
 
-            disorientation=disorientation,
-
-            difficulty_tasks=difficulty_tasks
+            cognitive_score=int(cognitive_score)
         )
+
 
     except Exception as e:
 
